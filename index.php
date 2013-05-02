@@ -40,8 +40,22 @@ list(, $source_dir, $screen_width, $screen_height) = $argv;
 $debug_mode = !empty($argv[4]);
 
 logonscreener_log('Debug mode ON.');
+logonscreener_requirements();
 logonscreener_destination_prepare();
 logonscreener_source_scan();
+
+/**
+ * Checks minimal requirements to run the script.
+ */
+function logonscreener_requirements() {
+  if (version_compare(PHP_VERSION, '5.2.1') < 0) {
+    logonscreener_log('Your PHP is too old. Go get the latest.');
+    exit;
+  }
+  if (!function_exists('imagegd2') && (!function_exists('dl') || !@dl('php_gd2.dll'))) {
+    logonscreener_log('GD is disabled.');
+  }
+}
 
 /**
  * Builds the destination folder tree if it does not already exist.
@@ -105,7 +119,8 @@ function logonscreener_file_change($file) {
 
   // If source image is valid to be a logonscreen then just copy it.
   if (!logonscreener_image_is_valid($info)) {
-    $created = ($image = logonscreener_image_load($file, $info['extension']))
+    $created = function_exists('imagegd2')
+            && ($image = logonscreener_image_load($file, $info['extension']))
             && ($image = logonscreener_image_scale_and_crop($image, $info['width'], $info['height']))
             && ($file  = logonscreener_image_save($image));
     if (!$created) {
