@@ -6,7 +6,7 @@
  *
  * Script for random changing win7 logonscreen images.
  *
- * @author Mike Shiyan <dev@mike.pp.ua>
+ * @author Mike Shiyan <logonscreener@mike.pp.ua>
  * @link https://bitbucket.org/mikeshiyan/logonscreener
  */
 
