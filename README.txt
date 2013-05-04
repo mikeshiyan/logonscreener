@@ -6,7 +6,7 @@ A PHP script for random changing win7 logonscreen images.
 REQUIREMENTS
 ------------
 
-- Windows 7 (don't know if admin rights needed).
+- Windows 7 (and user account with Admin rights).
 - PHP 5.2.1 (or higher).
 - GD 2.0.28 (or higher) library is optional and only needed to resize images.
   Version 2.0.28 is bundled already (but not enabled by default) with PHP 5.2.1.
@@ -15,9 +15,18 @@ REQUIREMENTS
 INSTALLATION
 ------------
 
-1. Download this script and place it wherever you want on your machine.
+1. First, make sure that the ability of changing the logonscreen is turned on.
+   Run Registry Editor: press Win+R, type 'regedit' (without the quotes) and
+   press OK.
 
-2. Download the latest stable PHP in Zip from http://windows.php.net/download/
+   Go to HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\Background\
+   and look for 'OEMBackground' DWORD parameter. If its value is 0, change it
+   to 1 (by double-clicking the parameter or Edit -> Change). If a parameter or
+   section does not exist, create them (Edit -> Create).
+
+2. Download this script and place it wherever you want on your machine.
+
+3. Download the latest stable PHP in Zip from http://windows.php.net/download/
    (Thread Safe or Non - doesn't matter), and extract it wherever you want
    on your machine.
 
@@ -40,7 +49,7 @@ INSTALLATION
    Now you're able to test this script (refer to Debugging section for
    information on how to do it).
 
-3. Run Task Scheduler: press Win+R, type 'taskschd.msc' (without the quotes) and
+4. Run Task Scheduler: press Win+R, type 'taskschd.msc' (without the quotes) and
    press OK.
 
    Choose "Create Task" in "Action" menu of Task Scheduler.
@@ -75,18 +84,29 @@ DEBUGGING
 ---------
 
 Debug process from cmd:
+- Win+R, type 'cmd', press OK.
+- Type next, separating by space, and double-quoting paths containing spaces:
+  - full path to php.exe;
+  - full path to logonscreener script file;
+  - full path to the images folder (without trailing slash);
+  - screen width (in pixels);
+  - screen height (in pixels);
+  - 'debug' flag,
+and press Enter. Here's my own example:
+
 W:/usr/local/php5/php.exe W:/home/localhost/www/logonscreener/index.php C:/Users/Public/Pictures/wallpapers 1366 768 debug
 
-@todo Describe each possible step from log and how to resolve it: preparing
-destination folder, warning about Image functions are very memory intensive (Be
-sure to set memory_limit high enough
-http://php.net/manual/image.configuration.php), etc.
+Debug messages are self-informative.
+
+Sometimes PHP may not have enough memory to run the script, because Image
+functions are very memory intensive. You'll see an error message, telling you
+that 'Allowed memory size exhausted'. In such case edit php.ini file to set
+'memory_limit' directive with a higher value.
 
 
 TODO
 ----
 
-- Reread THAT post about logonscreen image requirements.
 - Add license and/or copyright docs.
 - Make use of tmp files instead of creating new ones (or save tmp files next
   to this script).
