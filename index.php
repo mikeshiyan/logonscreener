@@ -118,12 +118,13 @@ function logonscreener_file_change($file) {
     return FALSE;
   }
 
-  // If source image is valid to be a logonscreen then just copy it.
-  if (!logonscreener_image_is_valid($info)) {
+  // If source image is valid to be a logonscreen or if transformed image exists
+  // in cache, then just copy it.
+  if (!logonscreener_image_is_valid($info) && ($tmp_file = logonscreener_file_cache($file))) {
     $created = function_exists('imagegd2')
             && ($image = logonscreener_image_load($file, $info['extension']))
             && ($image = logonscreener_image_scale_and_crop($image, $info['width'], $info['height']))
-            && ($file  = logonscreener_image_save($image));
+            && ($file  = logonscreener_image_save($image, $tmp_file));
     if (!$created) {
       return FALSE;
     }
@@ -208,6 +209,32 @@ function logonscreener_image_is_valid($info) {
   }
 
   return $valid;
+}
+
+/**
+ * Checks if file needs to be cached.
+ *
+ * @param string &$file
+ *   Source file path. If cached version of file exists, then this parameter
+ *   will point to it instead of source file.
+ *
+ * @return bool|string
+ *   The path to save the cached file to on success, or FALSE if file is cached
+ *   already.
+ */
+function logonscreener_file_cache(&$file) {
+  $directory = str_replace('\\', '/', rtrim(sys_get_temp_dir(), '/\\'));
+  $filename  = pathinfo($file, PATHINFO_FILENAME);
+  $tmp_file  = "$directory/logonscreener $filename.jpg";
+  logonscreener_log("Temporary file: $tmp_file");
+
+  if (is_file($tmp_file)) {
+    $file = $tmp_file;
+    logonscreener_log('Cached file exists.');
+    return FALSE;
+  }
+
+  return $tmp_file;
 }
 
 /**
@@ -309,7 +336,9 @@ function logonscreener_image_scale_and_crop($image, $source_width, $source_heigh
  *
  * @param resource $image
  *   An image resource returned by logonscreener_image_load() and transformed.
- * @param int $image_jpeg_quality
+ * @param string $filename
+ *   The path to save the file to.
+ * @param int $quality
  *   Ranges from 0 (worst quality, smaller file) to 100 (best quality,
  *   biggest file).
  *
@@ -319,31 +348,25 @@ function logonscreener_image_scale_and_crop($image, $source_width, $source_heigh
  * @see LOGONSCREENER_MAX_FILESIZE
  * @see logonscreener_image_load()
  */
-function logonscreener_image_save($image, $image_jpeg_quality = 100) {
-  static $tmp_file;
-  if (empty($tmp_file)) {
-    $tmp_file = tempnam(sys_get_temp_dir(), 'LSC');
-    logonscreener_log("Temporary file created: $tmp_file");
-  }
-
-  if (!imagejpeg($image, $tmp_file, $image_jpeg_quality)) {
-    logonscreener_log("Could not write to tmp file with $image_jpeg_quality% quality.");
+function logonscreener_image_save($image, $filename, $quality = 100) {
+  if (!imagejpeg($image, $filename, $quality)) {
+    logonscreener_log("Could not write to tmp file with $quality% quality.");
     return FALSE;
   }
 
   // Clear the cached file size and get the image information.
   clearstatcache();
-  $filesize = filesize($tmp_file);
+  $filesize = filesize($filename);
 
   if ($filesize > LOGONSCREENER_MAX_FILESIZE) {
-    logonscreener_log("Quality = $image_jpeg_quality%. Filesize = $filesize B.");
-    $tmp_file = logonscreener_image_save($image, --$image_jpeg_quality);
+    logonscreener_log("Quality = $quality%. Filesize = $filesize B.");
+    $filename = logonscreener_image_save($image, $filename, --$quality);
   }
   else {
-    logonscreener_log("Resulted image quality: $image_jpeg_quality%.", "Resulted file size: $filesize.");
+    logonscreener_log("Resulted image quality: $quality%.", "Resulted file size: $filesize.");
   }
 
-  return $tmp_file;
+  return $filename;
 }
 
 /**

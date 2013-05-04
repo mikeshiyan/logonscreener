@@ -108,8 +108,6 @@ TODO
 ----
 
 - Add license and/or copyright docs.
-- Make use of tmp files instead of creating new ones (or save tmp files next
-  to this script).
 - Unlocal chars (like 'é') in filenames are not supported (Local [rus] are).
 
 
