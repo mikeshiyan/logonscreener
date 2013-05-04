@@ -62,11 +62,11 @@ INSTALLATION
    - Add arguments: here you need to list following items separating them by
      a space:
      - full path to logonscreener script file;
-     - full path to your images folder (with a trailing forward slash);
+     - full path to your images folder (without trailing slash);
      - your screen's width (in pixels);
      - your screen's height (in pixels).
      If any of paths contains spaces, wrap the full path in "double-quotes".
-     For example, D:/logonscreener/index.php "E:/my pictures/" 1366 768
+     For example, D:/logonscreener/index.php "E:/my pictures" 1366 768
 
    Press OK - task is saved.
 
@@ -75,7 +75,7 @@ DEBUGGING
 ---------
 
 Debug process from cmd:
-W:/usr/local/php5/php.exe W:/home/localhost/www/logonscreener/index.php C:/Users/Public/Pictures/wallpapers/ 1366 768 debug
+W:/usr/local/php5/php.exe W:/home/localhost/www/logonscreener/index.php C:/Users/Public/Pictures/wallpapers 1366 768 debug
 
 @todo Describe each possible step from log and how to resolve it: preparing
 destination folder, warning about Image functions are very memory intensive (Be
@@ -86,8 +86,6 @@ http://php.net/manual/image.configuration.php), etc.
 TODO
 ----
 
-- Check trailing slash in source path: Trailing backslash before closing quote
-  makes trouble.
 - Reread THAT post about logonscreen image requirements.
 - Add license and/or copyright docs.
 - Make use of tmp files instead of creating new ones (or save tmp files next

@@ -81,6 +81,7 @@ function logonscreener_destination_prepare() {
  */
 function logonscreener_source_scan() {
   global $source_dir;
+  $source_dir = str_replace('\\', '/', rtrim($source_dir, '/\\'));
 
   if (!$files = @scandir($source_dir)) {
     logonscreener_log("$source_dir not found.");
@@ -89,7 +90,7 @@ function logonscreener_source_scan() {
 
   while (!empty($files)) {
     $key = array_rand($files);
-    if (logonscreener_file_change($source_dir . $files[$key])) {
+    if (logonscreener_file_change($source_dir . '/' . $files[$key])) {
       break;
     }
     unset($files[$key]);
