@@ -88,7 +88,7 @@ Debug process from cmd:
 - Type next, separating by space, and double-quoting paths containing spaces:
   - full path to php.exe;
   - full path to logonscreener script file;
-  - full path to the images folder (without trailing slash);
+  - full path to the images folder (without trailing slash) or to the image file;
   - screen width (in pixels);
   - screen height (in pixels);
   - 'debug' flag,

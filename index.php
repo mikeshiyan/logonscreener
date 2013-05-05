@@ -26,7 +26,7 @@ define('LOGONSCREENER_MAX_FILESIZE', 256702);
 /**
  * Command line arguments.
  *
- * @global string $source_dir
+ * @global string $source
  *   Path to directory with images to be chosen from.
  * @global int $screen_width
  *   Width of the destination image.
@@ -36,7 +36,7 @@ define('LOGONSCREENER_MAX_FILESIZE', 256702);
  *   (Optional) Flag to run script in debug mode. Log messages will be
  *   printed out.
  */
-list(, $source_dir, $screen_width, $screen_height) = $argv;
+list(, $source, $screen_width, $screen_height) = $argv;
 $debug_mode = !empty($argv[4]);
 
 logonscreener_log('Debug mode ON.');
@@ -80,17 +80,24 @@ function logonscreener_destination_prepare() {
  *   FALSE if source directory does not exist, otherwise TRUE.
  */
 function logonscreener_source_scan() {
-  global $source_dir;
-  $source_dir = str_replace('\\', '/', rtrim($source_dir, '/\\'));
+  global $source;
+  $source = str_replace('\\', '/', rtrim($source, '/\\'));
 
-  if (!$files = @scandir($source_dir)) {
-    logonscreener_log("$source_dir not found.");
-    return FALSE;
+  if (!$files = @scandir($source)) {
+    if ($GLOBALS['debug_mode'] && is_file($source)) {
+      // Debug mode let us set one specific image file as a source.
+      $files = array(basename($source));
+      $source = dirname($source);
+    }
+    else {
+      logonscreener_log("$source not found.");
+      return FALSE;
+    }
   }
 
   while (!empty($files)) {
     $key = array_rand($files);
-    if (logonscreener_file_change($source_dir . '/' . $files[$key])) {
+    if (logonscreener_file_change($source . '/' . $files[$key])) {
       break;
     }
     unset($files[$key]);
