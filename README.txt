@@ -107,5 +107,4 @@ that 'Allowed memory size exhausted'. In such case edit php.ini file to set
 TODO
 ----
 
-- Add license and/or copyright docs.
 - Unlocal chars (like 'é') in filenames are not supported (Local [rus] are).
