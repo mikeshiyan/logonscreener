@@ -109,10 +109,3 @@ TODO
 
 - Add license and/or copyright docs.
 - Unlocal chars (like 'é') in filenames are not supported (Local [rus] are).
-
-
-CREDITS
--------
-
-Mike Shiyan <logonscreener@mike.pp.ua>
-https://bitbucket.org/mikeshiyan/logonscreener
